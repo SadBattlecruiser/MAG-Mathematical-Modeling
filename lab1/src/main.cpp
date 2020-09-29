@@ -1,7 +1,7 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <utility>
-#include <string>
 #include <cmath>
 #include <windows.h>
 
@@ -53,8 +53,26 @@ int main(int argc, char *argv[]) {
 //  }
 
   // Записываем в .csv
-  char[] out_path = "res.csv";
-  
+  char out_path[] = "res.csv";
+  ofstream out_file;
+  out_file.open(out_path);
+  char dlm = ',';
+  // Названия столбцов
+  out_file << "time" << dlm << "analytic";
+  for (int i = 0; i < n_solv; i++) {
+    out_file << dlm << argv[i + 1];
+  }
+  out_file << endl;
+  // Для каждого шага сначала отдельно аналитическое, потом все численные
+  for (int i = 0; i < n_steps; i++) {
+    out_file << analytic_res[i].first << dlm << analytic_res[i].second;
+    for (int j = 0; j < n_solv; j++) {
+      out_file << dlm << res_arr[j][i].second;
+    }
+    out_file << endl;
+  }
+  out_file.close();
+
   return 0;
 };
 ////////////////////////////////////
@@ -64,5 +82,5 @@ double der_func(double T_curr) {
 };
 
 double analytic(double time) {
-  return T_beg - (T_s - T_beg) * exp(-gam*time);
+  return T_s + (T_beg - T_s) * exp(-gam*time);
 };
