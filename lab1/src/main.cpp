@@ -16,7 +16,7 @@ double T_s = 25;
 double T_beg = 150;
 double time_beg = 0;
 double time_end = 100;
-unsigned n_steps = 1;
+unsigned n_steps = 1000;
 
 ////////////////////////////////////
 // В качестве аргументов принимаем имена библиотек, из которых берем решатели, без .dll
@@ -29,20 +29,21 @@ int main(int argc, char *argv[]) {
     //cout << solv_names[i] + ".dll" << endl;
   }
   // Вектор с результатами для каждого решателя
-  vector<vector<pair<double, double>>> res_arr;
+  vector<vector<pair<double, double> > > res_arr;
   // Вызываем все решатели, доставая поочередно из dll'ок
   HMODULE dll;
-  typedef int FT(vector<pair<double, double>>& );
-  FT* solver = nullptr;
+  //typedef int FT(vector<pair<double, double>>& (*)(double (*)(double), double, double, double, unsigned));
+  //FT* solver = nullptr;
+  vector<pair<double, double> >& (*solver)(double (*)(double), double, double, double, unsigned);
   for (int i = 0; i < n_solv; i++) {
     dll = LoadLibrary(argv[i + 1]);
-    solver = (FT*) GetProcAddress(dll, "solver");
-    res_arr.emplace_back(solver(der_func, T_beg, time_beg, time_end, n_steps));
+    solver = (vector<pair<double, double> >& (*)(double (*)(double), double, double, double, unsigned)) GetProcAddress(dll, "solver");
+    res_arr.push_back(solver(der_func, T_beg, time_beg, time_end, n_steps));
   }
 
-  //for (int i = 0; i < res.size(); i++) {
-  //  cout << res[i].first << ' ' << res[i].second << endl;
-  //}
+  for (int i = 0; i < res_arr[0].size(); i++) {
+    cout << res_arr[0][i].first << ' ' << res_arr[0][i].second << endl;
+  }
 
   return 0;
 };
