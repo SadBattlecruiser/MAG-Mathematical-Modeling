@@ -1,6 +1,6 @@
 CC=g++
 FLAGS= -c -std=c++11
-HEADERS=-I .\headers
+HEADERS= -I .\src
 
 all: main euler_dll heun_dll clean_files
 
