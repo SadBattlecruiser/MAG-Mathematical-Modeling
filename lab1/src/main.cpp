@@ -1,18 +1,21 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <map>
 #include <utility>
 #include <cmath>
 #include <windows.h>
+#include <config.hpp>
 
 //#include "euler.cpp"
 //#define TESTFUNC std::function<vector<pair<double, double>>&(double (*der_func)(double), double, double, double, unsigned)>
 
 using namespace std;
 
-double der_func(double T_curr);
-double analytic(double time);
+double der_func(double T_curr); // Ф-я производной
+double analytic(double time);   // аналитического решения
 
+unsigned gam_type = 1;          // Тип задания gam. 1 - значение, 2 - интервал, 3 - M(gam) и D(gam)
 double gam = 0.1;
 double T_s = 25;
 double T_beg = 150;
@@ -20,59 +23,71 @@ double time_beg = 0;
 double time_end = 100;
 unsigned n_steps = 1000;
 
+unsigned n_solv = 0;            // Количество численных решателей
+vector<string> solv_names;      // Имена численных решателей
+char out_file_name[100] = "res.csv";
+char csv_dlm = ',';
+
 ////////////////////////////////////
 // В качестве аргументов принимаем имена библиотек, из которых берем решатели, без .dll
 int main(int argc, char *argv[]) {
-  // Формируем список имен файлов решателей
-  unsigned n_solv = argc - 1;
-  string* solv_names = new string[n_solv];
-//  for (int i = 0; i < n_solv; i++) {
-//    solv_names[i] = argv[i + 1];
-//    cout << solv_names[i] + ".dll" << endl;
-//  }
-  // Вектор с результатами для каждого решателя
-  vector<vector<pair<double, double> > > res_arr;
-  // Вызываем все решатели, доставая поочередно из dll'ок
+  ifstream config_file("config.txt");
+  if (!config_file) {
+    cout << "A default config.txt was created." << endl;
+    create_default_config();
+    config_file.open("config.txt");
+  }
+  // Устанавливаем все глобальные переменные
+  read_config_from_file(config_file);
+  config_file.close();
+
+  // Контейнер с результатами для каждого решателя
+  map<string, vector<pair<double, double> > > res_map;
+
+  // Аналитическое решение
+  cout << "Analytical calculation..." << endl;
+  vector<pair<double, double> > analytic_res;
+  for (double time_curr = time_beg; time_curr <= time_end; time_curr += (time_end-time_beg)/n_steps) {
+    analytic_res.push_back(pair<double, double>(time_curr, analytic(time_curr)));
+  }
+  res_map["analytic"] = analytic_res;
+  cout << "Done." << endl;
+
+  // Вызываем все численые решатели, доставая поочередно из dll'ок
   HMODULE dll;
 //  typedef int FT(vector<pair<double, double>>& (*)(double (*)(double), double, double, double, unsigned));
 //  FT* solver = nullptr;
   vector<pair<double, double> >& (*solver)(double (*)(double), double, double, double, unsigned);
   for (int i = 0; i < n_solv; i++) {
-    dll = LoadLibrary(argv[i + 1]);
+    cout << "Numerical calculation " << solv_names[i] << "..." << endl;
+    dll = LoadLibrary(solv_names[i].c_str());
     solver = (vector<pair<double, double> >& (*)(double (*)(double), double, double, double, unsigned)) GetProcAddress(dll, "solver");
-    res_arr.push_back(solver(der_func, T_beg, time_beg, time_end, n_steps));
+    //res_arr.push_back(solver(der_func, T_beg, time_beg, time_end, n_steps));
+    res_map[solv_names[i]] = solver(der_func, T_beg, time_beg, time_end, n_steps);
+    cout << "Done." << endl;
   }
-  // Аналитическое решение
-  vector<pair<double, double> > analytic_res;
-  for (double time_curr = time_beg; time_curr <= time_end; time_curr += (time_end-time_beg)/n_steps) {
-    analytic_res.push_back(pair<double, double>(time_curr, analytic(time_curr)));
-  }
-
-//  for (int i = 0; i < res_arr[0].size(); i++) {
-//    cout << res_arr[0][i].first << ' ' << res_arr[0][i].second << endl;
-//  }
 
   // Записываем в .csv
-  char out_path[] = "res.csv";
-  ofstream out_file;
-  out_file.open(out_path);
-  char dlm = ',';
+  cout << "Writing results..." << endl;
+  ofstream out_file(out_file_name);
   // Названия столбцов
-  out_file << "time" << dlm << "analytic";
+  //out_file << "time" << dlm << "analytic";
+  out_file << "time" << csv_dlm << "analytic";
   for (int i = 0; i < n_solv; i++) {
-    out_file << dlm << argv[i + 1];
+    out_file << csv_dlm << solv_names[i];
   }
   out_file << endl;
   // Для каждого шага сначала отдельно аналитическое, потом все численные
   for (int i = 0; i < n_steps; i++) {
-    out_file << analytic_res[i].first << dlm << analytic_res[i].second;
+    out_file << res_map["analytic"][i].first << csv_dlm << res_map["analytic"][i].second;
     for (int j = 0; j < n_solv; j++) {
-      out_file << dlm << res_arr[j][i].second;
+      out_file << csv_dlm << res_map[solv_names[j]][i].second;
     }
     out_file << endl;
   }
   out_file.close();
-
+  cout << "Done." << endl;
+  cout << "End of program." << endl;
   return 0;
 };
 ////////////////////////////////////
