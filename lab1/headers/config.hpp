@@ -17,8 +17,8 @@ extern double time_beg;
 extern double time_end;
 extern unsigned n_steps;
 
-extern unsigned n_solv;         // Количество численных решателей
-extern vector<string> solv_names;      // Имена численных решателей
+extern unsigned n_solv;             // Количество численных решателей
+extern vector<string> solv_names;   // Имена численных решателей
 extern char out_file_name[];
 extern char csv_dlm;
 

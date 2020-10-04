@@ -2,7 +2,7 @@ CC=g++
 FLAGS= -c -std=c++11
 HEADERS=-I .\headers
 
-all: main euler_dll heun_dll
+all: main euler_dll heun_dll clean_files
 
 main: main_o config_o
 	$(CC) out\main.o out\config.o -o out\main.out
@@ -11,7 +11,6 @@ main_o:
 
 config_o:
 	$(CC) $(FLAGS) $(HEADERS) src\config.cpp -o out\config.o
-
 
 euler_dll: euler_o
 	$(CC) -shared out\euler.o -o out\euler.dll
@@ -22,6 +21,3 @@ heun_dll: heun_o
 	$(CC) -shared out\heun.o -o out\heun.dll
 heun_o:
 	$(CC) $(FLAGS) $(HEADERS) -DBUILDING_EXAMPLE_DLL src\heun.cpp -o out\heun.o
-
-clean:
-	rm -rf out/*.o all

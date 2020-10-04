@@ -7,9 +7,6 @@
 #include <windows.h>
 #include <config.hpp>
 
-//#include "euler.cpp"
-//#define TESTFUNC std::function<vector<pair<double, double>>&(double (*der_func)(double), double, double, double, unsigned)>
-
 using namespace std;
 
 double der_func(double T_curr); // Ф-я производной
@@ -55,14 +52,11 @@ int main(int argc, char *argv[]) {
 
   // Вызываем все численые решатели, доставая поочередно из dll'ок
   HMODULE dll;
-//  typedef int FT(vector<pair<double, double>>& (*)(double (*)(double), double, double, double, unsigned));
-//  FT* solver = nullptr;
   vector<pair<double, double> >& (*solver)(double (*)(double), double, double, double, unsigned);
   for (int i = 0; i < n_solv; i++) {
     cout << "Numerical calculation " << solv_names[i] << "..." << endl;
     dll = LoadLibrary(solv_names[i].c_str());
     solver = (vector<pair<double, double> >& (*)(double (*)(double), double, double, double, unsigned)) GetProcAddress(dll, "solver");
-    //res_arr.push_back(solver(der_func, T_beg, time_beg, time_end, n_steps));
     res_map[solv_names[i]] = solver(der_func, T_beg, time_beg, time_end, n_steps);
     cout << "Done." << endl;
   }
@@ -71,7 +65,6 @@ int main(int argc, char *argv[]) {
   cout << "Writing results..." << endl;
   ofstream out_file(out_file_name);
   // Названия столбцов
-  //out_file << "time" << dlm << "analytic";
   out_file << "time" << csv_dlm << "analytic";
   for (int i = 0; i < n_solv; i++) {
     out_file << csv_dlm << solv_names[i];
