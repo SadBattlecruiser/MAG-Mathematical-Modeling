@@ -10,7 +10,7 @@ out_link = 'out.csv'
 
 time_end = 100.
 time_beg = 0.
-n_steps_arr = np.arange(51, 11, -2)
+n_steps_arr = np.arange(51, 1, -2)
 # Для каждого количества шагов вычисляем величину шага и нормы
 res_data = pd.DataFrame({'n_steps': [0],'step': [0.], 'l2_euler': [0.], 'l2_euler_normalized': [0.],
     'l2_heun': [0.], 'l2_heun_normalized': [0.], 'l2_euler_re' : [0.], 'l2_euler_re_normalized' : [0.],
@@ -33,7 +33,7 @@ for n_steps in n_steps_arr:
     f.close()
     print('close')
     # Почему-то если не паузить, ему становится плохо. Видно, что-то с чтением и записью
-    time.sleep(0.3)
+    time.sleep(0.4)
     # Величина шага
     step = (time_end - time_beg) / n_steps
     # Вызываем решатель
