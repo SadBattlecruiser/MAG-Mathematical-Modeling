@@ -22,7 +22,7 @@ unsigned n_steps = 1000;
 
 unsigned n_solv = 0;            // Количество численных решателей
 vector<string> solv_names;      // Имена численных решателей
-char out_file_name[100] = "res.csv";
+char out_file_name[100] = "out.csv";
 char csv_dlm = ',';
 
 ////////////////////////////////////
@@ -44,8 +44,9 @@ int main(int argc, char *argv[]) {
   // Аналитическое решение
   cout << "Analytical calculation..." << endl;
   vector<pair<double, double> > analytic_res;
-  for (double time_curr = time_beg; time_curr <= time_end; time_curr += (time_end-time_beg)/n_steps) {
+  for (double time_curr = time_beg; time_curr <= time_end*1.00001; time_curr += (time_end-time_beg)/n_steps) {
     analytic_res.push_back(pair<double, double>(time_curr, analytic(time_curr)));
+    //cout << "a_time: " << time_curr << endl;
   }
   res_map["analytic"] = analytic_res;
   cout << "Done." << endl;
@@ -57,7 +58,7 @@ int main(int argc, char *argv[]) {
     cout << "Numerical calculation " << solv_names[i] << "..." << endl;
     dll = LoadLibrary(solv_names[i].c_str());
     solver = (vector<pair<double, double> >& (*)(double (*)(double), double, double, double, unsigned)) GetProcAddress(dll, "solver");
-    res_map[solv_names[i]] = solver(der_func, T_beg, time_beg, time_end, n_steps);
+    res_map[solv_names[i]] = solver(der_func, T_beg, time_beg, time_end, n_steps + 1);
     cout << "Done." << endl;
   }
 
@@ -71,7 +72,7 @@ int main(int argc, char *argv[]) {
   }
   out_file << endl;
   // Для каждого шага сначала отдельно аналитическое, потом все численные
-  for (int i = 0; i < n_steps; i++) {
+  for (int i = 0; i <= n_steps; i++) {
     out_file << res_map["analytic"][i].first << csv_dlm << res_map["analytic"][i].second;
     for (int j = 0; j < n_solv; j++) {
       out_file << csv_dlm << res_map[solv_names[j]][i].second;

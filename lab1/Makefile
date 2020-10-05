@@ -2,10 +2,10 @@ CC=g++
 FLAGS= -c -std=c++11
 HEADERS= -I .\src
 
-all: main euler_dll heun_dll clean_files
+all: main euler_dll heun_dll
 
 main: main_o config_o
-	$(CC) out\main.o out\config.o -o out\main.out
+	$(CC) out\main.o out\config.o -o out\main.exe
 main_o:
 	$(CC) $(FLAGS) $(HEADERS) src\main.cpp -o out\main.o
 

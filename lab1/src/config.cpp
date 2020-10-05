@@ -50,13 +50,16 @@ void read_config_from_file(ifstream& inp) {
         }
         solv_names.push_back(curr_line.substr(next_dlm + 1));
         n_solv = solv_names.size();
+        cout << "set solv_names" << endl;
       }
       else if (var_name == "gam_type") {
         sscanf(curr_line.c_str()+eq_pos+1, "%u", &gam_type);
+        cout << "set gam_type" << endl;
       }
       else if (var_name == "gam") {
         if (gam_type == 1) {
-          sscanf(curr_line.c_str()+eq_pos+1, "%d", &gam);
+          sscanf(curr_line.c_str()+eq_pos+1, "%lf", &gam);
+          cout << "set gam" << endl;
         }
         else if (gam_type == 2) {
           cout << "gam_type 2 not supported" << &endl;
@@ -68,25 +71,32 @@ void read_config_from_file(ifstream& inp) {
         }
       }
       else if (var_name == "T_s") {
-        sscanf(curr_line.c_str()+eq_pos+1, "%d", &T_s);
+        sscanf(curr_line.c_str()+eq_pos+1, "%lf", &T_s);
+        cout << "set T_s" << endl;
       }
       else if (var_name == "T_beg") {
-        sscanf(curr_line.c_str()+eq_pos+1, "%d", &T_beg);
+        sscanf(curr_line.c_str()+eq_pos+1, "%lf", &T_beg);
+        cout << "set T_beg" << endl;
       }
       else if (var_name == "time_beg") {
-        sscanf(curr_line.c_str()+eq_pos+1, "%d", &time_beg);
+        sscanf(curr_line.c_str()+eq_pos+1, "%lf", &time_beg);
+        cout << "set time_beg" << endl;
       }
       else if (var_name == "time_end") {
-        sscanf(curr_line.c_str()+eq_pos+1, "%d", &time_end);
+        sscanf(curr_line.c_str()+eq_pos+1, "%lf", &time_end);
+        cout << "set time_end" << endl;
       }
       else if (var_name == "n_steps") {
         sscanf(curr_line.c_str()+eq_pos+1, "%u", &n_steps);
+        cout << "set n_steps" << endl;
       }
       else if (var_name == "out_file_name") {
         sscanf(curr_line.c_str()+eq_pos+1, "%s", out_file_name);
+        cout << "set out_file_name" << endl;
       }
       else if (var_name == "csv_dlm") {
         csv_dlm = curr_line[eq_pos + 1];
+        cout << "set scv_dlm" << endl;
       }
     };
   };
