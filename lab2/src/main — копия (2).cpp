@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <list>
 #include <string>
 #include <map>
 #include <utility>
@@ -29,18 +30,16 @@ double der_func(double T_curr);
 double analytic(double time);
 // Найти все .plg в папке
 vector<string>& find_plug_files(const char* path);
-// Попытаться загрузить файлы и инициировать плагины. Возвращает вектор открытых плагинов, надо их закрыть потом.
-vector<HMODULE>& register_plugins(const vector<string>& names, vector<ifc_ConfigPlugin*>& configs,
-                      vector<ifc_SolverPlugin*>& solvers, vector<ifc_WidgetPlugin*>& widgets);
+// Попытаться загрузить файлы и инициировать плагины
+void register_plugins(const vector<string>& names, list<ifc_ConfigPlugin*>& configs,
+                      list<ifc_SolverPlugin*>& solvers, list<ifc_WidgetPlugin*>& widgets);
 
 // Установить глобальные переменные по структуре, которую вернет конфигуратор
 // Костыль, но я не смог грамотно передать глобальные переменные в плагин и установить их там, что неудивительно
 void set_global(config_struct cs);
 // Распечатать текущие параметры и набор плагинов
-void print_state(const vector<ifc_ConfigPlugin*>& configs, const vector<ifc_SolverPlugin*>& solvers,
-                  const vector<ifc_WidgetPlugin*>& widgets);
-
-
+void print_state(const list<ifc_ConfigPlugin*>& configs, const list<ifc_SolverPlugin*>& solvers,
+                  const list<ifc_WidgetPlugin*>& widgets);
 
 ////////////////////////////////////
 int main(int argc, char* argv[]) {
@@ -56,17 +55,30 @@ int main(int argc, char* argv[]) {
     cout << names[i] << endl;
   }
   // Инициализируем плагины
-  vector<ifc_ConfigPlugin*> configs;
-  vector<ifc_SolverPlugin*> solvers;
-  vector<ifc_WidgetPlugin*> widgets;
-  vector<HMODULE>& plug_files = register_plugins(names, configs, solvers, widgets);
+  list<ifc_ConfigPlugin*> configs;
+  list<ifc_SolverPlugin*> solvers;
+  list<ifc_WidgetPlugin*> widgets;
+  register_plugins(names, configs, solvers, widgets);
+
+
+  cout << "TEST SOLVER" << endl; // Падаем
+  (*solvers.begin())->solve(der_func, T_beg, time_beg, time_end, n_steps + 1);
+
+
   // Нет конфигураторов - дефолтные настройки, больше 1 конф. - берем 1-й.
   if (configs.size() == 0) {
     cout << "WARNING: No ifc_ConfigPlugin have been registered" << endl;
   }
   else {
+
+    // ПОЧЕМУ-ТО НЕЛЬЗЯ ОБРАТИТЬСЯ ПО УКАЗАТЕЛЮ ЗДЕСЬ
+    cout << "before set_global" << endl;
     // Выставляем глобальные переменные по возвращенной структуре
-    set_global(configs[0]->config(string()));
+    cout << (*configs.begin())->get_name() << endl;
+    config_struct temp = (*configs.begin())->config(string());
+    cout << "temp" << endl;
+    set_global(temp);
+    cout << "after set_global" << endl;
   }
   // Контейнер с результатами для каждого решателя
   map<string, vector<pair<double, double> > > res_map;
@@ -82,28 +94,13 @@ int main(int argc, char* argv[]) {
     cout << "WARNING: No ifc_SolverPlugin have been registered" << endl;
   }
 
-  cout << "Close plugins..." << endl;
-  for (size_t i = 0; i < configs.size(); i++) {
-    delete configs[i];
-  };
-  for (size_t i = 0; i < solvers.size(); i++) {
-    delete solvers[i];
-  };
-  for (size_t i = 0; i < widgets.size(); i++) {
-    delete widgets[i];
-  };
-  for (size_t i = 0; i < plug_files.size(); i++) {
-    FreeLibrary(widgets[i]);
-  };
-  cout << "Done." << endl;
+
   print_state(configs, solvers, widgets);
+  cout << "Done." << endl;
   cout << "End of program." << endl;
   return 0;
 };
 ////////////////////////////////////
-
-
-
 
 double der_func(double T_curr) {
   return -gam * (T_curr - T_s);
@@ -135,17 +132,24 @@ vector<string>& find_plug_files(const char* path) {
   return names;
 }
 
-vector<HMODULE>& register_plugins(const vector<string>& names, vector<ifc_ConfigPlugin*>& configs,
-                      vector<ifc_SolverPlugin*>& solvers, vector<ifc_WidgetPlugin*>& widgets) {
-  vector<HMODULE>& plug_files = *(new vector<HMODULE>);
+void register_plugins(const vector<string>& names, list<ifc_ConfigPlugin*>& configs,
+                      list<ifc_SolverPlugin*>& solvers, list<ifc_WidgetPlugin*>& widgets) {
   for (size_t i = 0; i < names.size(); i++) {
-    plug_files.emplace_back(LoadLibrary(names[i].c_str()));
-    if (plug_files.back()) {
-      ifc_BasePlugin* (*reg_plg)() = (ifc_BasePlugin* (*)()) GetProcAddress(plug_files.back(), "register_plugin");
+    HMODULE dll = LoadLibrary(names[i].c_str());
+    if (dll) {
+      ifc_BasePlugin* (*reg_plg)() = (ifc_BasePlugin* (*)()) GetProcAddress(dll, "register_plugin");
       if (reg_plg) {
         ifc_BasePlugin* curr_plug_p = reg_plg();
+        cout << "REG PLUG" << endl;
+        cout << curr_plug_p->get_title() << endl;
         if (curr_plug_p->is_instance("ifc_SolverPlugin")) {
+          cout << "------" << endl;
           solvers.emplace_back((ifc_SolverPlugin*) curr_plug_p);
+          cout << "PUSH IN SOLVERS" << endl;
+          cout << "NOW SOLVER.SIZE():" << solvers.size() << endl;
+          cout << (*(solvers.end()))->get_title() << endl;
+          cout << (*(solvers.begin()))->get_title() << endl;
+          cout << "------" << endl;
         }
         else if (curr_plug_p->is_instance("ifc_WidgetPlugin")) {
           widgets.emplace_back((ifc_WidgetPlugin*) curr_plug_p);
@@ -164,9 +168,9 @@ vector<HMODULE>& register_plugins(const vector<string>& names, vector<ifc_Config
     else {
       cout << "WARNING: Library load error " << names[i] << endl;
     }
-    //FreeLibrary(dll);
+    FreeLibrary(dll);
   }
-  return plug_files;
+  return;
 }
 
 void set_global(config_struct cs) {
@@ -183,17 +187,18 @@ void set_global(config_struct cs) {
   cout << "end set_global()" << endl;
 }
 
-void print_state(const vector<ifc_ConfigPlugin*>& configs, const vector<ifc_SolverPlugin*>& solvers, const vector<ifc_WidgetPlugin*>& widgets) {
+void print_state(const list<ifc_ConfigPlugin*>& configs, const list<ifc_SolverPlugin*>& solvers,
+                  const list<ifc_WidgetPlugin*>& widgets) {
   cout << "-------" << endl;
-  cout << "Current state" << endl;
-  cout << endl << "Registered plugins:" << endl;
+  cout << "Current state." << endl;
+  cout << "Registered plugins:" << endl;
 
   cout << "ifc_ConfigPlugin" << endl;
   if (configs.size() > 0) {
-    for (size_t i = 0; i < configs.size(); i++) {
-      cout << '\t' << configs[i]->get_name() << " - " << configs[i]->get_title() << endl;
+    for (auto it = configs.begin(); it != configs.end(); ++it) {
+      cout << '\t' << (*it)->get_name() << " - " << (*it)->get_title() << endl;
     }
-    cout << "  used: " << configs[0]->get_name() << endl;
+    cout << "  used: " << (*(configs.begin()))->get_name() << endl;
   }
   else {
     cout << "\tnone" << endl;
@@ -201,8 +206,8 @@ void print_state(const vector<ifc_ConfigPlugin*>& configs, const vector<ifc_Solv
 
   cout << "ifc_SolverPlugin" << endl;
   if (solvers.size() > 0) {
-    for (size_t i = 0; i < solvers.size(); i++) {
-      cout << '\t' << solvers[i]->get_name() << " - " << solvers[i]->get_title() << endl;
+    for (auto it = solvers.begin(); it != solvers.end(); ++it) {
+      cout << '\t' << (*it)->get_name() << " - " << (*it)->get_title() << endl;
     }
   }
   else {
@@ -211,37 +216,31 @@ void print_state(const vector<ifc_ConfigPlugin*>& configs, const vector<ifc_Solv
 
   cout << "ifc_WidgetPlugin" << endl;
   if (widgets.size() > 0) {
-    for (size_t i = 0; i < widgets.size(); i++) {
-      cout << '\t' << widgets[i]->get_name() << " - " << widgets[i]->get_title() << endl;
+    for (auto it = widgets.begin(); it != widgets.end(); ++it) {
+      cout << '\t' << (*it)->get_name() << " - " << (*it)->get_title() << endl;
     }
   }
   else {
     cout << "\tnone" << endl;
   }
 
-  cout << endl << "Model parameters:" << endl;
-  cout << "\tgam_type: " << gam_type << endl;
-  cout << "\tgam: " << gam << endl;
-  cout << "\tT_s: " << T_s << endl;
-  cout << "\tT_beg: " << T_beg << endl;
-  cout << "\ttime_beg: " << time_beg << endl;
-  cout << "\ttime_end: " << time_end << endl;
-  cout << "\tn_steps: " << n_steps << endl;
+  cout << "Model parameters:" << endl;
+  cout << "gam_type: " << gam_type << endl;
+  cout << "gam: " << gam << endl;
+  cout << "T_s: " << T_s << endl;
+  cout << "T_beg: " << T_beg << endl;
+  cout << "time_beg: " << time_beg << endl;
+  cout << "time_end: " << time_end << endl;
+  cout << "n_steps: " << n_steps << endl;
 
-  // Если есть вывод в консоль
-  for (size_t i = 0; i < widgets.size(); i++) {
-    if (widgets[i]->get_id() == 302) {
-      cout << endl << "Сonsole output:" << endl;
-      cout << "\tTrue" << endl;
-    }
-  }
+  cout << "Settings:" << endl;
   // Если есть вывод в файл
-  for (size_t i = 0; i < widgets.size(); i++) {
-    if (widgets[i]->get_id() == 302) {
-      cout << endl << "File output settings:" << endl;
-      cout << "\tout_file_name: " << out_file_name << endl;
-      cout << "\tcsv_dlm: " << csv_dlm << endl;
+  for (auto it = widgets.begin(); it != widgets.end(); ++it) {
+    if ((*it)->get_id() == 302) {
+      cout << "out_file_name: " << out_file_name << endl;
+      cout << "csv_dlm: " << csv_dlm << endl;
     }
   }
+
   cout << "-------" << endl;
 }

@@ -10,6 +10,7 @@ class cls_HeunSolver : public ifc_SolverPlugin {
   virtual int get_id() const;
   virtual const char* get_name() const;
   virtual const char* get_type() const;
+  const char* get_title() const;
   virtual bool is_instance(const char* req_name) const;
   // Функция интегрирования диффура
   virtual vector<pair<double, double> >& solve(double (*der_func)(double), double y0, double begin, double end, unsigned n_steps);
@@ -17,13 +18,15 @@ class cls_HeunSolver : public ifc_SolverPlugin {
 };
 
 
-extern "C" __declspec(dllexport) ifc_BasePlugin* registerPlugin() {
+extern "C" __declspec(dllexport) ifc_BasePlugin* register_plugin() {
+  cout << "cls_HeunSolver register_plugin()" << endl;
   return new cls_HeunSolver;
 };
 
 // Принимает функцию производной
 extern "C" __declspec(dllexport)
 vector<pair<double, double> >& cls_HeunSolver::solve(double (*der_func)(double), double y0, double begin, double end, unsigned n_steps) {
+  cout << "IN SOLVE" << endl;
   double step = (end - begin) / n_steps;
   vector<pair<double, double> >& ret = *(new vector<pair<double, double> >());
 
@@ -39,17 +42,22 @@ vector<pair<double, double> >& cls_HeunSolver::solve(double (*der_func)(double),
 
 extern "C" __declspec(dllexport)
 int cls_HeunSolver::get_id() const {
-  return 102;
+  return 202;
 }
 
 extern "C" __declspec(dllexport)
 const char* cls_HeunSolver::get_name() const {
-  return "Heun method";
+  return "cls_HeunSolver";
 }
 
 extern "C" __declspec(dllexport)
 const char* cls_HeunSolver::get_type() const {
   return "ifc_SolverPlugin";
+}
+
+extern "C" __declspec(dllexport)
+const char* cls_HeunSolver::get_title() const {
+  return "Heun method";
 }
 
 extern "C" __declspec(dllexport)

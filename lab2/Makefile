@@ -2,22 +2,25 @@ CC=g++
 FLAGS= -c -std=c++11
 HEADERS= -I .\src
 
-all: main euler_dll heun_dll
+all: main euler_plg heun_plg txt_config_plg
 
-main: main_o config_o
-	$(CC) out\main.o out\config.o -o out\main.exe
+main: main_o
+	$(CC) -o out\\main.exe out\\main.o
+
 main_o:
-	$(CC) $(FLAGS) $(HEADERS) src\main.cpp -o out\main.o
+	$(CC) -o out\\main.o $(FLAGS) $(HEADERS) src\\main.cpp
 
-config_o:
-	$(CC) $(FLAGS) $(HEADERS) src\config.cpp -o out\config.o
-
-euler_dll: euler_o
-	$(CC) -shared out\euler.o -o out\euler.dll
+euler_plg: euler_o
+	$(CC) -o out\\euler_plugin.plg -shared out\\euler_plugin.o
 euler_o:
-	$(CC) $(FLAGS) $(HEADERS) -DBUILDING_EXAMPLE_DLL src\euler.cpp -o out\euler.o
+	$(CC) -o out\\euler_plugin.o $(FLAGS) $(HEADERS) -DBUILDING_EXAMPLE_DLL src\\euler_plugin.cpp
 
-heun_dll: heun_o
-	$(CC) -shared out\heun.o -o out\heun.dll
+heun_plg: heun_o
+	$(CC) -o out\\heun_plugin.plg -shared out\\heun_plugin.o
 heun_o:
-	$(CC) $(FLAGS) $(HEADERS) -DBUILDING_EXAMPLE_DLL src\heun.cpp -o out\heun.o
+	$(CC) -o out\\heun_plugin.o $(FLAGS) $(HEADERS) -DBUILDING_EXAMPLE_DLL src\\heun_plugin.cpp
+
+txt_config_plg: txt_config_o
+	$(CC) -o out\\txt_config_plugin.plg -shared out\\txt_config_plugin.o
+txt_config_o:
+	$(CC) -o out\\txt_config_plugin.o $(FLAGS) $(HEADERS) -DBUILDING_EXAMPLE_DLL src\\txt_config_plugin.cpp

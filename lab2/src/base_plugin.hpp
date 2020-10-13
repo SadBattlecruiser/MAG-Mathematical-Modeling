@@ -8,6 +8,7 @@ public:
   virtual int get_id() const = 0;
   virtual const char* get_name() const = 0;
   virtual const char* get_type() const = 0;
+  virtual const char* get_title() const = 0;
   virtual bool is_instance(const char* req_name) const = 0;
   virtual ~ifc_BasePlugin() {};
 };
