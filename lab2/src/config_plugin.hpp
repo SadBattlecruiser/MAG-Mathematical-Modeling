@@ -28,7 +28,7 @@ public:
   virtual bool is_instance(const char* req_name) const = 0;
   virtual ~ifc_ConfigPlugin() {};
   // Функция задания глобальных параметров
-  virtual config_struct config(const string& settings) = 0;
+  virtual config_struct config(const char* settings = "") = 0;
 };
 
 #endif

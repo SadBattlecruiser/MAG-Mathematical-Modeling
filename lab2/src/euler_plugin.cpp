@@ -20,13 +20,12 @@ public:
 
 extern "C" __declspec(dllexport)
 ifc_BasePlugin* register_plugin() {
-  cout << "cls_EulerSolver register_plugin()" << endl;
+  cout << "\tcls_EulerSolver register_plugin()" << endl;
   return new cls_EulerSolver;
 };
 
 // Принимает функцию производной
 vector<pair<double, double> >& cls_EulerSolver::solve(double (*der_func)(double), double y0, double begin, double end, unsigned n_steps) {
-  cout << "IN SOLVE" << endl;
   double step = (end - begin) / n_steps;
   vector<pair<double, double> >& ret = *(new vector<pair<double, double> >());
   double y_curr = y0;
@@ -64,5 +63,5 @@ bool cls_EulerSolver::is_instance(const char* req_name) const {
 
 
 cls_EulerSolver::~cls_EulerSolver() {
-  cout << "EulerSolver destructor" << endl;
+  cout << "\tEulerSolver destructor" << endl;
 }

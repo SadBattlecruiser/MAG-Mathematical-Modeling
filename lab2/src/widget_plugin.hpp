@@ -16,7 +16,7 @@ public:
   virtual bool is_instance(const char* req_name) const = 0;
   virtual ~ifc_WidgetPlugin() {};
   // Функция запуска виджета, возвращает 0, если всё удачно
-  virtual int execute(const map<string, vector<pair<double, double> > >& data, const string& settings) const = 0;
+  virtual int execute(map<string, vector<pair<double, double> > >& data, const char* settings = "") = 0;
 };
 
 #endif

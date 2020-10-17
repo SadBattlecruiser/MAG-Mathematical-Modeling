@@ -18,16 +18,15 @@ class cls_TxtConfig : public ifc_ConfigPlugin {
   virtual bool is_instance(const char* req_name) const;
   virtual ~cls_TxtConfig();
   // Функция задания глобальных параметров
-  virtual config_struct config(const string& settings);
+  virtual config_struct config(const char* settings = "");
 };
 
 
 
 extern "C" __declspec(dllexport)
 ifc_BasePlugin* register_plugin() {
-  cout << "cls_TxtConfig register_plugin()" << endl;
+  cout << "\tcls_TxtConfig register_plugin()" << endl;
   ifc_BasePlugin* temp = new cls_TxtConfig();
-  cout << temp << endl;
   return temp;
 };
 
@@ -57,7 +56,7 @@ void create_default_config() {
 };
 
 void read_config_from_file(ifstream& inp, config_struct& cs) {
-  cout << "Reading configuration from file..." << endl;
+  //cout << "Reading configuration from file..." << endl;
   string curr_line;
   string var_name;
   unsigned eq_pos = 0; // Будет указывать на знак равенства
@@ -67,54 +66,54 @@ void read_config_from_file(ifstream& inp, config_struct& cs) {
       var_name = curr_line.substr(0, eq_pos);
       if (var_name == "gam_type") {
         sscanf(curr_line.c_str()+eq_pos+1, "%u", &cs.gam_type);
-        cout << "set gam_type" << endl;
+        cout << "\tset gam_type" << endl;
       }
       else if (var_name == "gam") {
         if (cs.gam_type == 1) {
           sscanf(curr_line.c_str()+eq_pos+1, "%lf", &cs.gam);
-          cout << "set gam" << endl;
+          cout << "\tset gam" << endl;
         }
         else if (cs.gam_type == 2) {
-          cout << "gam_type 2 not supported" << &endl;
+          cout << "\tgam_type 2 not supported" << &endl;
           exit(2);
         }
         else if (cs.gam_type == 3) {
-          cout << "gam_type 3 not supported" << &endl;
+          cout << "\tgam_type 3 not supported" << &endl;
           exit(3);
         }
       }
       else if (var_name == "T_s") {
         sscanf(curr_line.c_str()+eq_pos+1, "%lf", &cs.T_s);
-        cout << "set T_s" << endl;
+        cout << "\tset T_s" << endl;
       }
       else if (var_name == "T_beg") {
         sscanf(curr_line.c_str()+eq_pos+1, "%lf", &cs.T_beg);
-        cout << "set T_beg" << endl;
+        cout << "\tset T_beg" << endl;
       }
       else if (var_name == "time_beg") {
         sscanf(curr_line.c_str()+eq_pos+1, "%lf", &cs.time_beg);
-        cout << "set time_beg" << endl;
+        cout << "\tset time_beg" << endl;
       }
       else if (var_name == "time_end") {
         sscanf(curr_line.c_str()+eq_pos+1, "%lf", &cs.time_end);
-        cout << "set time_end" << endl;
+        cout << "\tset time_end" << endl;
       }
       else if (var_name == "n_steps") {
         sscanf(curr_line.c_str()+eq_pos+1, "%u", &cs.n_steps);
-        cout << "set n_steps" << endl;
+        cout << "\tset n_steps" << endl;
       }
       else if (var_name == "out_file_name") {
         char temp[512];
         cs.out_file_name = temp;
-        cout << "set out_file_name" << endl;
+        cout << "\tset out_file_name" << endl;
       }
       else if (var_name == "csv_dlm") {
         cs.csv_dlm = curr_line[eq_pos + 1];
-        cout << "set scv_dlm" << endl;
+        cout << "\tset scv_dlm" << endl;
       }
     };
   };
-  cout << "Done." << endl;
+  //cout << "Done." << endl;
 };
 
 
@@ -146,10 +145,10 @@ bool cls_TxtConfig::is_instance(const char* req_name) const {
 
 
 cls_TxtConfig::~cls_TxtConfig() {
-  cout << "cls_TxtConfig destructor" << endl;
+  cout << "\tcls_TxtConfig destructor" << endl;
 }
 
-config_struct cls_TxtConfig::config(const string& settings) {
+config_struct cls_TxtConfig::config(const char* settings) {
   config_struct ret;
   // Можно было бы сделать отдельный конструктор для структуры, но...
   ret.gam_type = 1;

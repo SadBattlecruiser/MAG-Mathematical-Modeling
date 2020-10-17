@@ -19,14 +19,13 @@ class cls_HeunSolver : public ifc_SolverPlugin {
 
 
 extern "C" __declspec(dllexport) ifc_BasePlugin* register_plugin() {
-  cout << "cls_HeunSolver register_plugin()" << endl;
+  cout << "\tcls_HeunSolver register_plugin()" << endl;
   return new cls_HeunSolver;
 };
 
 // Принимает функцию производной
 extern "C" __declspec(dllexport)
 vector<pair<double, double> >& cls_HeunSolver::solve(double (*der_func)(double), double y0, double begin, double end, unsigned n_steps) {
-  cout << "IN SOLVE" << endl;
   double step = (end - begin) / n_steps;
   vector<pair<double, double> >& ret = *(new vector<pair<double, double> >());
 
@@ -67,5 +66,5 @@ bool cls_HeunSolver::is_instance(const char* req_name) const {
 
 extern "C" __declspec(dllexport)
 cls_HeunSolver::~cls_HeunSolver() {
-  cout << "HeunSolver destructor" << endl;
+  cout << "\tHeunSolver destructor" << endl;
 }
