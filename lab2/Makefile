@@ -2,7 +2,7 @@ CC=g++
 FLAGS= -c -std=c++11
 HEADERS= -I .\src
 
-all: main euler_plg heun_plg txt_config_plg to_csv_plg
+all: main euler_plg heun_plg txt_config_plg to_csv_plg to_console_plg
 
 main: main_o
 	$(CC) -o out\\main.exe out\\main.o
@@ -30,3 +30,9 @@ to_csv_plg: to_csv_o
 
 to_csv_o:
 	$(CC) -o out\\to_csv_plugin.o $(FLAGS) $(HEADERS) -DBUILDING_EXAMPLE_DLL src\\to_csv_plugin.cpp
+
+to_console_plg: to_console_o
+	$(CC) -o out\\to_console_plugin.plg -shared out\\to_console_plugin.o
+
+to_console_o:
+	$(CC) -o out\\to_console_plugin.o $(FLAGS) $(HEADERS) -DBUILDING_EXAMPLE_DLL src\\to_console_plugin.cpp

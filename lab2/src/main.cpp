@@ -233,9 +233,9 @@ void print_report(const vector<ifc_ConfigPlugin*>& configs, const vector<ifc_Sol
 
   // Если есть вывод в консоль
   for (size_t i = 0; i < widgets.size(); i++) {
-    if (widgets[i]->get_id() == 302) {
+    if (widgets[i]->get_id() == 301) {
       cout << endl << "Console output:" << endl;
-      cout << "\tTrue" << endl;
+      cout << "\tTrue (see above)" << endl;
     }
   }
   // Если есть вывод в файл
