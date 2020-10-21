@@ -16,7 +16,7 @@ struct config_struct {
   double time_end;
   unsigned n_steps;
   string out_file_name;       // Дефолтное имя выходного файла на случай, если есть плагин записи в файл
-  char csv_dlm;               // Туда же разделитель
+  string csv_dlm;             // Туда же разделитель
 };
 
 // Сам плагин конфигуратора

@@ -6,14 +6,14 @@
 
 using namespace std;
 
-class cls_ConsolePlugin : public ifc_WidgetPlugin {
+class cls_ToConsolePlugin : public ifc_WidgetPlugin {
 public:
   virtual int get_id() const;
   virtual const char* get_name() const;
   virtual const char* get_type() const;
   virtual const char* get_title() const;
   virtual bool is_instance(const char* req_name) const;
-  virtual ~cls_ConsolePlugin();
+  virtual ~cls_ToConsolePlugin();
   // Функция запуска виджета, возвращает 0, если всё удачно
   virtual int execute(map<string, vector<pair<double, double> > >& data, const char* settings = "");
 };
@@ -22,43 +22,43 @@ public:
 extern "C" __declspec(dllexport)
 ifc_BasePlugin* register_plugin() {
   cout << "\tcls_ToCsvPlugin register_plugin()" << endl;
-  ifc_BasePlugin* temp = new cls_ConsolePlugin();
+  ifc_BasePlugin* temp = new cls_ToConsolePlugin();
   return temp;
 };
 
 
 
-int cls_ConsolePlugin::get_id() const {
+int cls_ToConsolePlugin::get_id() const {
   return 301;
 }
 
 
-const char* cls_ConsolePlugin::get_name() const {
-  return "cls_ConsolePlugin";
+const char* cls_ToConsolePlugin::get_name() const {
+  return "cls_ToConsolePlugin";
 }
 
 
-const char* cls_ConsolePlugin::get_type() const {
+const char* cls_ToConsolePlugin::get_type() const {
   return "ifc_WidgetPlugin";
 }
 
 
-const char* cls_ConsolePlugin::get_title() const {
+const char* cls_ToConsolePlugin::get_title() const {
   return "prints the result to the console";
 }
 
 
-bool cls_ConsolePlugin::is_instance(const char* req_name) const {
+bool cls_ToConsolePlugin::is_instance(const char* req_name) const {
   return (strcmp(req_name, "ifc_WidgetPlugin") == 0);
 }
 
 
-cls_ConsolePlugin::~cls_ConsolePlugin() {
-  cout << "\tcls_ConsolePlugin" << endl;
+cls_ToConsolePlugin::~cls_ToConsolePlugin() {
+  cout << "\tcls_ToConsolePlugin destructor" << endl;
 }
 
 
-int cls_ConsolePlugin::execute(map<string, vector<pair<double, double> > >& data, const char* settings) {
+int cls_ToConsolePlugin::execute(map<string, vector<pair<double, double> > >& data, const char* settings) {
   // Названия столбцов
   vector<string> names;
   for (auto it = data.begin(); it != data.end(); it++) {

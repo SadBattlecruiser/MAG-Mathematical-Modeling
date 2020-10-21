@@ -19,9 +19,15 @@ double T_beg = 150;
 double time_beg = 0;
 double time_end = 100;
 unsigned n_steps = 1000;
-string out_file_name = "out.csv"; // Дефолтное имя выходного файла на случай, если есть плагин записи в файл
-char csv_dlm = ',';               // Туда же разделитель
 
+string out_file_name = "out.csv"; // Дефолтное имя выходного файла на случай, если есть плагин записи в файл
+string csv_dlm = ",";             // Туда же разделитель
+
+string ftp_file_name = "out.csv"; // На случай, если есть плагин работы с ftp
+string ftp_host = "127.0.0.1";
+string ftp_port = "21";
+string ftp_login = "admin";
+string ftp_password = "12345678";
 
 // Ф-я производной
 double der_func(double T_curr);
@@ -109,8 +115,19 @@ int main(int argc, char* argv[]) {
   }
   else {
     for (size_t i = 0; i < widgets.size(); i++) {
+      string settings;
       cout << widgets[i]->get_name() << endl;
-      if (widgets[i]->execute(res_map/*, string()*/)) {
+      // Обрабатываем отдельно случаи вывода в файл и по ftp - передаем им настройки
+      // Вывод в файл
+      if (widgets[i]->get_id() == 302) {
+        settings = csv_dlm + out_file_name;
+      }
+      // FTP
+      else if (widgets[i]->get_id() == 303) {
+        settings = ftp_file_name + "|" + ftp_host + "|" + ftp_port + "|" + ftp_login + "|" + ftp_password;
+      }
+      // Собственно, дергаем виджет
+      if (widgets[i]->execute(res_map, settings.c_str())) {
         cout << "\tErrors are possible" << endl;
       };
     }
@@ -244,6 +261,15 @@ void print_report(const vector<ifc_ConfigPlugin*>& configs, const vector<ifc_Sol
       cout << endl << "File output settings:" << endl;
       cout << "\tout_file_name: " << out_file_name << endl;
       cout << "\tcsv_dlm: " << csv_dlm << endl;
+    }
+  }
+  // Если есть вывод через ftp
+  for (size_t i = 0; i < widgets.size(); i++) {
+    if (widgets[i]->get_id() == 303) {
+      cout << endl << "FTP:" << endl;
+      cout << endl << "FTP:" << endl;
+      cout << endl << "FTP:" << endl;
+      cout << endl << "FTP:" << endl;
     }
   }
 

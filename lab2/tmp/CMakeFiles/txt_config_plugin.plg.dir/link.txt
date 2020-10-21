@@ -1,0 +1,3 @@
+"C:\Program Files\cmake-3.18.3-win64-x64\bin\cmake.exe" -E rm -f CMakeFiles\txt_config_plugin.plg.dir/objects.a
+C:\MinGW\bin\ar.exe cr CMakeFiles\txt_config_plugin.plg.dir/objects.a @CMakeFiles\txt_config_plugin.plg.dir\objects1.rsp
+C:\MinGW\bin\g++.exe -shared -o libtxt_config_plugin.plg.dll -Wl,--out-implib,libtxt_config_plugin.plg.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles\txt_config_plugin.plg.dir/objects.a -Wl,--no-whole-archive @CMakeFiles\txt_config_plugin.plg.dir\linklibs.rsp

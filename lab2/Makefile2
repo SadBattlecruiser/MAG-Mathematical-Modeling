@@ -1,8 +1,9 @@
 CC=g++
 FLAGS= -c -std=c++11
 HEADERS= -I .\src
+DEFAULTLIBS= -L C:\MinGW\lib
 
-all: main euler_plg heun_plg txt_config_plg to_csv_plg to_console_plg
+all: main euler_plg heun_plg txt_config_plg to_csv_plg to_console_plg to_ftp_plg
 
 main: main_o
 	$(CC) -o out\\main.exe out\\main.o
@@ -36,3 +37,9 @@ to_console_plg: to_console_o
 
 to_console_o:
 	$(CC) -o out\\to_console_plugin.o $(FLAGS) $(HEADERS) -DBUILDING_EXAMPLE_DLL src\\to_console_plugin.cpp
+
+to_ftp_plg: to_ftp_o
+	$(CC) -o out\\to_ftp_plugin.plg -shared $(DEFAULTLIBS) C:\\MinGW\\lib\\*.a  out\\to_ftp_plugin.o
+
+to_ftp_o:
+	$(CC) -o out\\to_ftp_plugin.o $(FLAGS) $(DEFAULTLIBS) $(HEADERS) -DBUILDING_EXAMPLE_DLL src\\to_ftp_plugin.cpp

@@ -104,11 +104,14 @@ void read_config_from_file(ifstream& inp, config_struct& cs) {
       }
       else if (var_name == "out_file_name") {
         char temp[512];
+        sscanf(curr_line.c_str()+eq_pos+1, "%s", temp);
         cs.out_file_name = temp;
         cout << "\tset out_file_name" << endl;
       }
       else if (var_name == "csv_dlm") {
-        cs.csv_dlm = curr_line[eq_pos + 1];
+        char temp[1];        
+        sscanf(curr_line.c_str()+eq_pos+1, "%s", temp);
+        cs.csv_dlm = temp;
         cout << "\tset scv_dlm" << endl;
       }
     };
