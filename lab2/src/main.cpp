@@ -126,7 +126,6 @@ int main(int argc, char* argv[]) {
       // FTP
       else if (widgets[i]->get_id() == 303) {
         settings = ftp_file_name + "|" + ftp_host + "|" + ftp_port + "|" + ftp_login + "|" + ftp_password;
-        cout << "CALL FTP IN MAIN WITH: " << settings << endl;
       }
       // Собственно, дергаем виджет
       if (widgets[i]->execute(res_map, settings.c_str())) {

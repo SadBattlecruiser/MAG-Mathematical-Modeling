@@ -80,11 +80,6 @@ int cls_ToFtpPlugin::execute(map<string, vector<pair<double, double> > >& data, 
   sscanf(port_str.c_str(), "%u", &port);
   getline(iss, login, '|');
   getline(iss, password, '|');
-  cout << "\t!!!!!" << file_name << endl;
-  cout << "\t!!!!!" << host << endl;
-  cout << "\t!!!!!" << port << endl;
-  cout << "\t!!!!!" << login << endl;
-  cout << "\t!!!!!" << password << endl;
   // Устанавливаем соединение
   HINTERNET hInternet;
   HINTERNET hFtpSession;
