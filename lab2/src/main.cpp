@@ -115,8 +115,9 @@ int main(int argc, char* argv[]) {
   }
   else {
     for (size_t i = 0; i < widgets.size(); i++) {
-      string settings;
       cout << widgets[i]->get_name() << endl;
+      // Дефолтные пустые настройки
+      string settings;
       // Обрабатываем отдельно случаи вывода в файл и по ftp - передаем им настройки
       // Вывод в файл
       if (widgets[i]->get_id() == 302) {
@@ -125,6 +126,7 @@ int main(int argc, char* argv[]) {
       // FTP
       else if (widgets[i]->get_id() == 303) {
         settings = ftp_file_name + "|" + ftp_host + "|" + ftp_port + "|" + ftp_login + "|" + ftp_password;
+        cout << "CALL FTP IN MAIN WITH: " << settings << endl;
       }
       // Собственно, дергаем виджет
       if (widgets[i]->execute(res_map, settings.c_str())) {
@@ -233,6 +235,11 @@ void set_global(config_struct cs) {
   n_steps  = cs.n_steps;
   out_file_name = cs.out_file_name;
   csv_dlm = cs.csv_dlm;
+  ftp_file_name = cs.ftp_file_name;
+  ftp_host = cs.ftp_host;
+  ftp_port = cs.ftp_port;
+  ftp_login = cs.ftp_login;
+  ftp_password = cs.ftp_password;
 }
 
 void print_report(const vector<ifc_ConfigPlugin*>& configs, const vector<ifc_SolverPlugin*>& solvers, const vector<ifc_WidgetPlugin*>& widgets) {
@@ -266,10 +273,12 @@ void print_report(const vector<ifc_ConfigPlugin*>& configs, const vector<ifc_Sol
   // Если есть вывод через ftp
   for (size_t i = 0; i < widgets.size(); i++) {
     if (widgets[i]->get_id() == 303) {
-      cout << endl << "FTP:" << endl;
-      cout << endl << "FTP:" << endl;
-      cout << endl << "FTP:" << endl;
-      cout << endl << "FTP:" << endl;
+      cout << endl << "FTP output settings:" << endl;
+      cout << "\thost: " << ftp_host << endl;
+      cout << "\tport: " << ftp_port << endl;
+      cout << "\tlogin: " << ftp_login << endl;
+      cout << "\tpassword: " << ftp_password << endl;
+      cout << "\tfile_name: " << ftp_file_name << endl;
     }
   }
 

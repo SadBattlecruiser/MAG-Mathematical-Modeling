@@ -78,23 +78,27 @@ int cls_ToFtpPlugin::execute(map<string, vector<pair<double, double> > >& data, 
   getline(iss, host, '|');
   getline(iss, port_str, '|');
   sscanf(port_str.c_str(), "%u", &port);
-  cout << "PORT PORT PORT: " << port << endl;
   getline(iss, login, '|');
   getline(iss, password, '|');
+  cout << "\t!!!!!" << file_name << endl;
+  cout << "\t!!!!!" << host << endl;
+  cout << "\t!!!!!" << port << endl;
+  cout << "\t!!!!!" << login << endl;
+  cout << "\t!!!!!" << password << endl;
   // Устанавливаем соединение
   HINTERNET hInternet;
   HINTERNET hFtpSession;
   hInternet = InternetOpen(NULL, INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
   if (hInternet == NULL)
   {
-    cout << "\tcls_ToFtpPlugin ERROR: " << GetLastError();
+    cout << "\tcls_ToFtpPlugin ERROR: " << GetLastError() << endl;
   }
   else
   {
     hFtpSession = InternetConnect(hInternet, host.c_str(), port, login.c_str(), password.c_str(), INTERNET_SERVICE_FTP, 0, 0);
     if (hFtpSession == NULL)
     {
-      cout << "\tcls_ToFtpPlugin ERROR: " << GetLastError();
+      cout << "\tcls_ToFtpPlugin ERROR: " << GetLastError() << endl;
     }
     else
     {
@@ -102,7 +106,7 @@ int cls_ToFtpPlugin::execute(map<string, vector<pair<double, double> > >& data, 
       write_csv(data);
       if (!FtpPutFile(hFtpSession, "temp_ftp_out.csv", file_name.c_str(), FTP_TRANSFER_TYPE_ASCII, 0))
       {
-        cout << "\tcls_ToFtpPlugin ERROR: " << GetLastError();
+        cout << "\tcls_ToFtpPlugin ERROR: " << GetLastError() << endl;
       }
     }
   }

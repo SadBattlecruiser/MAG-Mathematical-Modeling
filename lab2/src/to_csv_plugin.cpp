@@ -70,7 +70,7 @@ int cls_ToCsvPlugin::execute(map<string, vector<pair<double, double> > >& data, 
     dlm = ',';
   }
   // Записываем в .csv
-  cout << "Writing results to " << out_path << ", delimeter '" << dlm << "'"<< endl;
+  cout << "\tWriting results to " << out_path << ", delimeter '" << dlm << "'"<< endl;
   ofstream out_file(out_path);
   // Названия столбцов
 

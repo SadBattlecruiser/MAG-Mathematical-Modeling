@@ -66,8 +66,8 @@ int cls_ToConsolePlugin::execute(map<string, vector<pair<double, double> > >& da
     names.emplace_back(it->first);
   }
   // Выводим в консоль названия
-  cout << "-----------------------------" << endl;
-  cout << "Calculation results" << endl;
+  cout << "\t-------------------------" << endl;
+  cout << "\tCalculation results" << endl;
   cout << "\t        Time";
   for (size_t i = 0; i < names.size(); i++){
     //out_file << names[i];
@@ -86,7 +86,7 @@ int cls_ToConsolePlugin::execute(map<string, vector<pair<double, double> > >& da
     }
     cout << endl;
   }
-  cout << "End of calculation results" << endl;
-  cout << "-----------------------------" << endl;
+  cout << "\tEnd of calculation results" << endl;
+  cout << "\t-------------------------" << endl;
   return 0;
 }

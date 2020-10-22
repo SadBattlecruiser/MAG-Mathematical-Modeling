@@ -15,8 +15,15 @@ struct config_struct {
   double time_beg;
   double time_end;
   unsigned n_steps;
+
   string out_file_name;       // Дефолтное имя выходного файла на случай, если есть плагин записи в файл
   string csv_dlm;             // Туда же разделитель
+
+  string ftp_file_name; // На случай, если есть плагин работы с ftp
+  string ftp_host;
+  string ftp_port;
+  string ftp_login;
+  string ftp_password;
 };
 
 // Сам плагин конфигуратора

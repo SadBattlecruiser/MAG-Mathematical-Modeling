@@ -39,7 +39,7 @@ to_console_o:
 	$(CC) -o out\\to_console_plugin.o $(FLAGS) $(HEADERS) -DBUILDING_EXAMPLE_DLL src\\to_console_plugin.cpp
 
 to_ftp_plg: to_ftp_o
-	$(CC) -o out\\to_ftp_plugin.plg -shared $(DEFAULTLIBS) C:\\MinGW\\lib\\*.a  out\\to_ftp_plugin.o
+	$(CC) -o out\\to_ftp_plugin.plg -shared $(DEFAULTLIBS) out\\to_ftp_plugin.o C:\\MinGW\\lib\\libwininet.a
 
 to_ftp_o:
 	$(CC) -o out\\to_ftp_plugin.o $(FLAGS) $(DEFAULTLIBS) $(HEADERS) -DBUILDING_EXAMPLE_DLL src\\to_ftp_plugin.cpp

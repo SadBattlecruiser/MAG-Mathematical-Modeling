@@ -52,6 +52,17 @@ void create_default_config() {
   out << "out_file_name=out.csv" << endl;
   out << "\t# Разделитель в выходном файле" << endl;
   out << "csv_dlm=," << endl;
+  out << "\t# Настройки для виджета, передающего результаты по FTP" << endl;
+  out << "\t# Имя создаваемого на сервере .csv файла" << endl;
+  out << "ftp_file_name=out.csv" << endl;
+  out << "\t# Хост" << endl;
+  out << "ftp_host=127.0.0.1" << endl;
+  out << "\t# Порт" << endl;
+  out << "ftp_port=21" << endl;
+  out << "\t# Логин" << endl;
+  out << "ftp_login=admin" << endl;
+  out << "\t# Пароль" << endl;
+  out << "ftp_password=12345678" << endl;
   out.close();
 };
 
@@ -60,7 +71,9 @@ void read_config_from_file(ifstream& inp, config_struct& cs) {
   string curr_line;
   string var_name;
   unsigned eq_pos = 0; // Будет указывать на знак равенства
+  //cout << "!!!!!! IN read_config" << curr_line << endl;
   while(getline(inp, curr_line)) {
+    //cout << "!! " << curr_line << endl;
     if(curr_line[1] != '#') {
       eq_pos = curr_line.find("=");
       var_name = curr_line.substr(0, eq_pos);
@@ -102,6 +115,7 @@ void read_config_from_file(ifstream& inp, config_struct& cs) {
         sscanf(curr_line.c_str()+eq_pos+1, "%u", &cs.n_steps);
         cout << "\tset n_steps" << endl;
       }
+      // Вывод в файл
       else if (var_name == "out_file_name") {
         char temp[512];
         sscanf(curr_line.c_str()+eq_pos+1, "%s", temp);
@@ -109,10 +123,41 @@ void read_config_from_file(ifstream& inp, config_struct& cs) {
         cout << "\tset out_file_name" << endl;
       }
       else if (var_name == "csv_dlm") {
-        char temp[1];        
+        char temp[1];
         sscanf(curr_line.c_str()+eq_pos+1, "%s", temp);
         cs.csv_dlm = temp;
         cout << "\tset scv_dlm" << endl;
+      }
+      // FTP
+      else if (var_name == "ftp_file_name") {
+        char temp[512];
+        sscanf(curr_line.c_str()+eq_pos+1, "%s", &temp);
+        cs.ftp_file_name = temp;
+        cout << "\tset ftp_file_name" << endl;
+      }
+      else if (var_name == "ftp_host") {
+        char temp[512];
+        sscanf(curr_line.c_str()+eq_pos+1, "%s", &temp);
+        cs.ftp_host = temp;
+        cout << "\tset ftp_host" << endl;
+      }
+      else if (var_name == "ftp_port") {
+        char temp[512];
+        sscanf(curr_line.c_str()+eq_pos+1, "%s", &temp);
+        cs.ftp_port = temp;
+        cout << "\tset ftp_port" << endl;
+      }
+      else if (var_name == "ftp_login") {
+        char temp[512];
+        sscanf(curr_line.c_str()+eq_pos+1, "%s", &temp);
+        cs.ftp_login = temp;
+        cout << "\tset ftp_login" << endl;
+      }
+      else if (var_name == "ftp_password") {
+        char temp[512];
+        sscanf(curr_line.c_str()+eq_pos+1, "%s", &temp);
+        cs.ftp_password = temp;
+        cout << "\tset ftp_password" << endl;
       }
     };
   };
@@ -163,6 +208,11 @@ config_struct cls_TxtConfig::config(const char* settings) {
   ret.n_steps = 1000;
   ret.out_file_name = "out.csv";
   ret.csv_dlm = ',';
+  ret.ftp_file_name = "out.csv"; // На случай, если есть плагин работы с ftp
+  ret.ftp_host = "127.0.0.1";
+  ret.ftp_port = "21";
+  ret.ftp_login = "admin";
+  ret.ftp_password = "12345678";
 
   ifstream config_file("config.txt");
   if (!config_file) {
@@ -171,6 +221,7 @@ config_struct cls_TxtConfig::config(const char* settings) {
     create_default_config();
     config_file.open("config.txt");
   }
+  //config_file.open("config.txt");
   read_config_from_file(config_file, ret);
   config_file.close();
   return ret;
